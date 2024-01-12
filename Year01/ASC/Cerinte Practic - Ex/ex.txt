@@ -1,0 +1,6 @@
+	Se citesc de la tastatura trei numere in baza 10. Sa se afiseze pe ecran, media
+aritmetica a acestor numere in baza 16.
+
+	Se citeste un numar n, in baza 10, de la tast. Se citesc apoi n numere in baza 16
+Indentificati sirul bytes-urilor cu valoarea maxima din fiecare word. Printati in fisier
+sirul rezultat.

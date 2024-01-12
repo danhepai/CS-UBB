@@ -1,0 +1,17 @@
+2;Tenet;Spy;Action;1;Dan Gaspar;5150506056164;True
+5;The Matrix;Sci-Fi;Action;4;Marius Marmureanu;1990524335411;True
+8;The Prestige;Drama;Mystery;7;Daniel Pantiuc;5040812339573;True
+11;The Godfather: Part II;Crime;Drama;10;Mariana Popescu;6231201015196;True
+1;Inception;Sci-Fi;Action;3;Mihai Popescu;5000520332390;True
+15;Titanic;Disaster;Romance;11;Mihai Stefan;5150506056164;False
+6;The Dark Knight;Crime;Action;4;Marius Marmureanu;1990524335411;True
+3;The Imitation Game;War;Drama;1;Dan Gaspar;5150506056164;True
+13;Pulp Fiction;Crime;Drama;3;Mihai Popescu;5000520332390;True
+8;The Prestige;Drama;Mystery;2;Norina Stanca;6060517335892;True
+15;Titanic;Disaster;Romance;8;Mihai Dascalu;5231201017411;True
+14;The Good, the Bad and the Ugly;Western;Adventure;4;Marius Marmureanu;1990524335411;True
+4;The Shawshank Redemption;Crime;Drama;1;Dan Gaspar;5150506056164;True
+8;The Prestige;Drama;Mystery;9;Vlad Petru;5030825337233;True
+3;The Imitation Game;War;Drama;3;Mihai Popescu;5000520332390;False
+3;The Imitation Game;War;Drama;3;Mihai Popescu;5000520332390;True
+16;Inception;Sci-Fi;Spy;6;Darius Dobos;5041224332001;True

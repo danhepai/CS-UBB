@@ -1,0 +1,47 @@
+     1                                  bits 32
+     2                                  
+     3                                  global start
+     4                                  
+     5                                  extern exit
+     6                                  import exit msvcrt.dll
+     7                                  
+     8                                  ;   Se dau 2 siruri de octeti S1 si S2 de aceeasi lungime. Sa se construiasca sirul D ;   astfel incat fiecare element din D sa reprezinte maximul dintre elementele de pe
+     9                                  ;   pozitiile corespunzatoare din S1 si S2.
+    10                                  
+    11                                  segment data use32 class=data
+    12 00000000 010306020307                s1 db 1,3,6,2,3,7
+    13                                      len equ $ - s1
+    14 00000006 060308010205                s2 db 6,3,8,1,2,5
+    15 0000000C <res 00000006>              d resb len
+    16                                  
+    17                                  segment code use32 class=code
+    18                                      start:  
+    19 00000000 BE00000000                      mov esi, 0
+    20                                          
+    21 00000005 B906000000                      mov ecx, len
+    22                                          repeta:
+    23 0000000A 8A86[00000000]                      mov al, [s1 + esi]
+    24 00000010 8A9E[06000000]                      mov bl, [s2 + esi]
+    25 00000016 38D8                                cmp al, bl
+    26 00000018 7302                                jae greater_or_eq
+    27 0000001A 7C08                                jl less
+    28                                              
+    29                                              greater_or_eq:
+    30 0000001C 8886[0C000000]                          mov [d + esi], al
+    31 00000022 EB06                                    jmp finish
+    32                                              
+    33                                              less:
+    34 00000024 889E[0C000000]                      mov [d + esi], bl
+    35                                              
+    36                                              finish:
+    37 0000002A 46                                      inc esi
+    38 0000002B E2DD                            loop repeta
+    39                                          
+    40                                          
+    41                                      
+    42 0000002D 6A00                            push dword 0
+    43 0000002F FF15[00000000]                  call [exit]
+    44                                  
+    45                                      
+    46                                  
+    47                                          

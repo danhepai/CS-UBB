@@ -1,0 +1,94 @@
+     1                                  bits 32
+     2                                  global start        
+     3                                  
+     4                                  extern exit, scanf, printf, fopen, fprintf
+     5                                  import exit msvcrt.dll
+     6                                  import scanf msvcrt.dll
+     7                                  import printf msvcrt.dll
+     8                                  import fopen msvcrt.dll
+     9                                  import fprintf msvcrt.dll
+    10                                                           
+    11                                  segment data use32 class=data
+    12 00000000 <res 00000004>              n resd 1
+    13 00000004 256400                      formatDecimal db "%d", 0
+    14 00000007 257800                      formatHexa db "%x", 0
+    15 0000000A 257300                      formatSir db "%s", 0
+    16 0000000D <res 00000004>              num resd 1
+    17 00000011 00                          max db 0
+    18 00000012 <res 00000004>              temp resd 1
+    19 00000016 63697465737465206E-         citeste db "citeste nr: ", 0
+    19 0000001F 723A2000           
+    20 00000023 <res 00000001>              first_byte resb 1
+    21 00000024 <res 00000001>              second_byte resb 1
+    22 00000025 <res 00000014>              sirbytes resb 20
+    23 00000039 00000000                    len dd 0
+    24 0000003D 00000000                    temp2 dd 0
+    25 00000041 6F75747075742E7478-         filename db "output.txt", 0
+    25 0000004A 7400               
+    26 0000004C FFFFFFFF                    descriptor dd -1
+    27 00000050 7700                        mod_access db "w", 0
+    28                                      
+    29                                      
+    30                                  segment code use32 class=code
+    31                                      start:
+    32 00000000 68[50000000]                    push dword mod_access
+    33 00000005 68[41000000]                    push dword filename
+    34 0000000A FF15[00000000]                  call [fopen]
+    35 00000010 83C408                          add esp, 8
+    36 00000013 A3[4C000000]                    mov [descriptor], eax
+    37                                          
+    38 00000018 68[00000000]                    push dword n
+    39 0000001D 68[04000000]                    push dword formatDecimal
+    40 00000022 FF15[00000000]                  call [scanf]
+    41 00000028 83C408                          add esp, 4*2
+    42                                          
+    43 0000002B BF[25000000]                    mov edi, sirbytes
+    44                                          
+    45 00000030 8B0D[00000000]                  mov ecx, [n]
+    46                                          repeta:
+    47 00000036 890D[12000000]                      mov [temp], ecx
+    48                                              
+    49 0000003C 68[16000000]                        push dword citeste
+    50 00000041 FF15[00000000]                      call [printf]
+    51 00000047 83C404                              add esp, 4
+    52                                              
+    53 0000004A 68[0D000000]                        push dword num
+    54 0000004F 68[07000000]                        push dword formatHexa
+    55 00000054 FF15[00000000]                      call [scanf]
+    56 0000005A 83C408                              add esp, 4*2
+    57                                              
+    58 0000005D BB[0D000000]                        mov ebx, num
+    59                                              
+    60 00000062 8A03                                mov al, [ebx + 0]
+    61 00000064 8A6302                              mov ah, [ebx + 2]
+    62 00000067 38E0                                cmp al, ah
+    63 00000069 7C38                                jl mai_mic
+    64                                              
+    65 0000006B 0FB6C0                              movzx eax, al
+    66 0000006E 50                                  push eax
+    67 0000006F 68[07000000]                        push dword formatHexa
+    68 00000074 68[4C000000]                        push dword descriptor
+    69 00000079 FF15[00000000]                      call [fprintf]
+    70 0000007F 83C40C                              add esp, 4*3
+    71                                              
+    72 00000082 8A4304                              mov al, [ebx + 4]
+    73 00000085 8A6306                              mov ah, [ebx + 6]
+    74 00000088 38E0                                cmp al, ah
+    75 0000008A 7C17                                jl mai_mic
+    76                                              
+    77 0000008C 0FB6C0                              movzx eax, al
+    78 0000008F 50                                  push eax
+    79 00000090 68[07000000]                        push dword formatHexa
+    80 00000095 68[4C000000]                        push dword descriptor
+    81 0000009A FF15[00000000]                      call [fprintf]
+    82 000000A0 83C40C                              add esp, 4*3
+    83                                              
+    84                                              mai_mic:            
+    85 000000A3 8B0D[12000000]                      mov ecx, [temp]
+    86 000000A9 E28B                            loop repeta
+    87                                          
+    88                                          
+    89                                      
+    90                                          ; exit(0)
+    91 000000AB 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    92 000000AD FF15[00000000]                  call    [exit]       ; call exit to terminate the program

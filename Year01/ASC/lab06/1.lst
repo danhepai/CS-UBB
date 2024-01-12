@@ -1,0 +1,72 @@
+     1                                  bits 32
+     2                                  
+     3                                  global start
+     4                                  
+     5                                  extern exit, printf
+     6                                  import exit msvcrt.dll
+     7                                  import printf msvcrt.dll
+     8                                  
+     9                                  ;   Se dau doua siruri de octeti s1 si s2. Sa se construiasca sirul de octeti d, care contine
+    10                                  ;   pentru fiecare octet din s2 pozitia sa in s1, sau 0 in caz contrar.
+    11                                  
+    12                                  segment data use32 class=data
+    13 00000000 0A0B0C0E0F                  s1 db 0x0A, 0x0B, 0x0C, 0x0E, 0x0F
+    14                                      n equ $ - s1
+    15 00000005 090A070D0B130C010F          s2 db 9, 0x0A, 7, 13, 0x0B, 19, 0x0C, 1, 0x0F
+    16                                      m equ $ - s2
+    17 0000000E <res 00000009>              d resb m
+    18 00000017 <res 00000004>              temp resd 1
+    19 0000001B 256400                      format db "%d", 0
+    20 0000001E 0A                          new_line db 0xA
+    21                                  
+    22                                  segment code use32 class=code
+    23                                      start:
+    24 00000000 BF[0E000000]                    mov edi, d
+    25 00000005 BE[05000000]                    mov esi, s2
+    26                                          
+    27 0000000A B909000000                      mov ecx, m
+    28 0000000F FC                              CLD 
+    29                                          repeta:
+    30 00000010 AC                                  lodsb
+    31 00000011 88C2                                mov dl, al      ; DL - el din s2
+    32 00000013 89F3                                mov ebx, esi    ; EBX - S1 POINTER TEMPORARY
+    33 00000015 890D[17000000]                      mov [temp], ecx ; TEMP - S1 LEN TEMPORARY
+    34 0000001B BE[00000000]                        mov esi, s1     ; ESI - S2 POINTER
+    35 00000020 B905000000                          mov ecx, n      ; ECX - S2 LEN
+    36                                              repeta2:
+    37 00000025 AC                                      lodsb       ; AL - el din s2
+    38 00000026 38D0                                    cmp al, dl
+    39 00000028 7524                                    jne not_equal
+    40                                                  
+    41                                                  ; AICI INSEREZ POZITIA PE CARE L-AM GASIT
+    42                                                  
+    43 0000002A 56                                      push dword esi
+    44 0000002B 68[1B000000]                            push dword format
+    45 00000030 FF15[00000000]                          call [printf]
+    46 00000036 83C408                                  add esp, 8
+    47                                                  
+    48 00000039 68[1E000000]                            push dword new_line
+    49 0000003E FF15[00000000]                          call [printf]
+    50 00000044 83C404                                  add esp, 4
+    51                                                  
+    52 00000047 56                                      push dword esi
+    53 00000048 5A                                      pop edx
+    54 00000049 8A02                                    mov al, byte[edx]
+    55                                                  
+    56 0000004B AA                                      stosb
+    57 0000004C EB09                                    jmp finish
+    58                                                  
+    59                                                  not_equal:
+    60 0000004E 83F900                                  cmp ecx, 0
+    61 00000051 49                                      dec ecx
+    62 00000052 7FD1                                    jg repeta2
+    63 00000054 B000                                    mov al, 0
+    64 00000056 AA                                      stosb
+    65                                              finish:
+    66 00000057 89DE                                mov esi, ebx
+    67 00000059 8B0D[17000000]                      mov ecx, [temp]
+    68                                  
+    69 0000005F E2AF                             loop repeta 
+    70                                  
+    71 00000061 6A00                            push dword 0
+    72 00000063 FF15[00000000]                  call [exit]

@@ -1,0 +1,78 @@
+     1                                  bits 32 ;
+     2                                  
+     3                                  global start        
+     4                                  
+     5                                  extern exit, printf               
+     6                                  import exit msvcrt.dll    
+     7                                  import printf msvcrt.dll
+     8                                  
+     9                                  ; Exercise: (e + g) * 2 / (a * c) + (h – f) + b * 3, where a,b,c,d-byte, e,f,g,h-word
+    10                                  ; print EAX
+    11                                  segment data use32 class=data
+    12 00000000 03                          a db 3
+    13 00000001 09                          b db 9
+    14 00000002 05                          c db 5
+    15 00000003 0A00                        e dw 10
+    16 00000005 0F00                        f dw 15
+    17 00000007 1400                        g dw 20
+    18 00000009 0A00                        h dw 10
+    19 0000000B <res 00000002>              temp resw 1
+    20 0000000D 256400                      format db "%d", 0
+    21                                  
+    22                                  
+    23                                  segment code use32 class=code
+    24                                      start:
+    25                                          ; e + g -> AX
+    26 00000000 66A1[03000000]                  mov ax, [e]
+    27 00000006 660305[07000000]                add ax, [g] 
+    28                                          
+    29                                          ; (e + g) * 2 -> DX:AX
+    30 0000000D 66BB0200                        mov bx, 2
+    31 00000011 66F7EB                          imul bx
+    32                                          
+    33                                          ; (e + g) * 2 -> CX:BX
+    34 00000014 6689D1                          mov cx, dx
+    35 00000017 6689C3                          mov bx, ax
+    36                                          
+    37                                          ; (a * c) -> AX
+    38 0000001A A0[00000000]                    mov al, [a]
+    39 0000001F 8A25[02000000]                  mov ah, [c]
+    40 00000025 F6EC                            imul ah
+    41                                          
+    42                                          ; temp -> (a*c)
+    43 00000027 66A3[0B000000]                  mov [temp], ax 
+    44                                          
+    45                                          ; (e + g) * 2 / (a * c) -> temp
+    46 0000002D 6689CA                          mov dx, cx
+    47 00000030 6689D8                          mov ax, bx
+    48 00000033 66F73D[0B000000]                idiv word [temp]
+    49 0000003A 66A3[0B000000]                  mov [temp], ax
+    50                                          
+    51                                          ;(h – f) + b * 3
+    52 00000040 668B1D[09000000]                mov bx, [h]
+    53 00000047 662B1D[05000000]                sub bx, [f] ; h - f -> BX
+    54                                          
+    55 0000004E B4F9                            mov ah, -7
+    56 00000050 A0[01000000]                    mov al, [b]
+    57 00000055 F6EC                            imul ah ; b * 3 -> AX
+    58                                          
+    59 00000057 6601C3                          add bx, ax ; BX -> (h – f) + b * 3
+    60                                          
+    61                                          ;(e + g) * 2 / (a * c) TEMP  +    (h – f) + b * 3 BX
+    62                                          
+    63 0000005A 66A1[0B000000]                  mov ax, [temp]
+    64 00000060 6601D8                          add ax, bx
+    65                                          
+    66                                          ;cwde
+    67                                          ; REZ FINAL IN EAX
+    68                                          
+    69 00000063 6650                            push dword ax
+    69          ******************       warning: register size specification ignored
+    70 00000065 68[0D000000]                    push dword format
+    71 0000006A FF15[00000000]                  call [printf]
+    72 00000070 83C408                          add esp, 4 * 2
+    73                                          
+    74                                          
+    75                                  
+    76 00000073 6A00                            push    dword 0      
+    77 00000075 FF15[00000000]                  call    [exit]     

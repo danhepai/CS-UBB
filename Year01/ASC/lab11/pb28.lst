@@ -1,0 +1,77 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit               ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+     9                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    10                                                           
+    11                                  import scanf msvcrt.dll
+    12                                  import printf msvcrt.dll
+    13                                  import gets msvcrt.dll
+    14                                  extern printf, exit, scanf, gets
+    15                                  
+    16                                  extern concatenare1
+    17                                  extern concatenare2
+    18                                  
+    19                                  ; our data is declared here (the variables needed by our program)
+    20                                  segment data use32 class=data
+    21 00000000 <res 00000028>              s1 resb 40
+    22 00000028 <res 00000004>              len1 resd 1
+    23 0000002C <res 00000028>              s2 resb 40
+    24 00000054 <res 00000028>              s3 resb 40
+    25 0000007C 0A00                        new_line db 10, 0
+    26 0000007E 436974657374652075-         mesajcitiresir db 'Citeste un sir: ', 0 
+    26 00000087 6E207369723A2000   
+    27 0000008F 536972756C20636974-         mesajafisaresir db 'Sirul citit este %s ' ,0
+    27 00000098 697420657374652025-
+    27 000000A1 732000             
+    28                                  
+    29                                      
+    30                                  segment code use32 class=code
+    31                                      start:
+    32                                          ;mesaj pt citire sir
+    33 00000000 68[7E000000]                    push dword mesajcitiresir
+    34 00000005 FF15[00000000]                  call [printf]
+    35 0000000B 83C404                          add esp,4*1
+    36                                          
+    37                                         ;citire efectiva sir        
+    38 0000000E 68[00000000]                    push dword s1
+    39 00000013 FF15[00000000]                  call [scanf]
+    40 00000019 83C404                          add esp, 4*1
+    41                                          
+    42 0000001C A3[28000000]                    mov [len1], eax
+    43                                          
+    44                                      
+    45 00000021 68[28000000]                    push dword len1
+    46 00000026 68[2C000000]                    push dword s2
+    47 0000002B 68[00000000]                    push dword s1
+    48                                          
+    49 00000030 E8(00000000)                    call concatenare1
+    50                                          
+    51 00000035 68[2C000000]                    push dword s2
+    52 0000003A FF15[00000000]                  call [printf]
+    53 00000040 83C404                          add esp, 4 * 1
+    54                                          
+    55                                          ;----------------------------------
+    56                                          
+    57 00000043 68[7C000000]                    push dword new_line
+    58 00000048 FF15[00000000]                  call[printf]
+    59 0000004E 83C404                          add esp, 4
+    60                                          
+    61                                          ;----------------------------------
+    62                                          
+    63 00000051 68[28000000]                    push dword len1
+    64 00000056 68[54000000]                    push dword s3
+    65 0000005B 68[00000000]                    push dword s1
+    66                                          
+    67 00000060 E8(00000000)                    call concatenare2
+    68                                          
+    69 00000065 68[54000000]                    push dword s3
+    70 0000006A FF15[00000000]                  call [printf]
+    71 00000070 83C404                          add esp, 4 * 1
+    72                                          
+    73 00000073 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    74 00000075 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

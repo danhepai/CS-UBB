@@ -1,0 +1,58 @@
+     1                                  bits 32
+     2                                  
+     3                                  global start        
+     4                                  
+     5                                  
+     6                                  extern exit, printf
+     7                                  import exit msvcrt.dll 
+     8                                  import printf msvcrt.dll   
+     9                                  
+    10                                  ; (a*a/b+b*b)/(2+b)+e-x; a-byte; b-word; e-doubleword; x-qword -> 9 / 6 + 12 - 6 = -5
+    11                                  
+    12                                  segment data use32 class=data
+    13 00000000 02                          a db 2
+    14 00000001 0400                        b dw 4
+    15 00000003 0C000000                    e dd 12
+    16 00000007 1000000000000000            x dq 16
+    17 0000000F <res 00000002>              temp resw 1
+    18 00000011 256400                      format db "%d", 0
+    19                                  
+    20                                  
+    21                                  segment code use32 class=code
+    22                                      start:
+    23 00000000 A0[00000000]                    mov al, [a]
+    24 00000005 F6E8                            imul al             ; -> AX = a * a*a
+    25                                          
+    26 00000007 6699                            cwd                 ; -> AX -> DX:AX
+    27 00000009 668B1D[01000000]                mov bx, [b]
+    28 00000010 66F7FB                          idiv bx             ; -> AX: a*a/b
+    29 00000013 66A3[0F000000]                  mov [temp], ax      ; word temp -> AX
+    30                                          
+    31 00000019 66A1[01000000]                  mov ax, [b]
+    32 0000001F 66F7E8                          imul ax             ; -> DX:AX b*b
+    33                                          
+    34 00000022 660305[0F000000]                add ax, [temp]
+    35 00000029 6683D200                        adc dx, 0           ; DX:AX -> (a*a/b+b*b)
+    36                                          
+    37 0000002D 668B1D[01000000]                mov bx, [b]         ; BX -> 2 + b
+    38 00000034 6683C302                        add bx, 2
+    39                                          
+    40 00000038 66F7FB                          idiv bx             ; AX -> (a*a/b+b*b)/(2+b)
+    41                                          
+    42 0000003B 98                              cwde
+    43 0000003C 0305[03000000]                  add eax, [e]
+    44 00000042 BA00000000                      mov edx, 0
+    45                                          
+    46 00000047 8B0D[0B000000]                  mov ecx, [x+4]
+    47 0000004D 8B1D[07000000]                  mov ebx, [x]
+    48                                          
+    49 00000053 29D8                            sub eax, ebx
+    50 00000055 19CA                            sbb edx, ecx
+    51                                          
+    52 00000057 50                              push eax
+    53 00000058 68[11000000]                    push dword format
+    54 0000005D FF15[00000000]                  call [printf]
+    55 00000063 83C408                          add esp, 4 * 2
+    56                                          
+    57 00000066 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    58 00000068 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

@@ -1,0 +1,95 @@
+     1                                  bits 32
+     2                                  
+     3                                  global start        
+     4                                  
+     5                                  extern exit, printf, scanf               
+     6                                  import exit msvcrt.dll
+     7                                  import printf msvcrt.dll
+     8                                  import scanf msvcrt.dll
+     9                                  
+    10                                  ;   Sa se citeasca de la tastatura un octet si un cuvant. Sa se afiseze pe ecran daca bitii octetului citit se regasesc consecutiv printre bitii cuvantului. Exemplu:
+    11                                  ;   a = 10 = 0000 1010b
+    12                                  ;   b = 256 = 0000 0001 0000 0000b
+    13                                  ;   Pe ecran se va afisa NU.
+    14                                  ;   a = 0Ah = 0000 1010b
+    15                                  ;   b = 6151h = 0110 0001 0101 0001b
+    16                                  ;   Pe ecran se va afisa DA (bitii se regasesc pe pozitiile 5-12).
+    17                                  
+    18                                  segment data use32 class=data
+    19 00000000 0000                        octet dw 0
+    20 00000002 0000                        cuvant dw 0
+    21 00000004 436974657374652064-         mesaj_citire db "Citeste de la tastatura un numar: ", 0
+    21 0000000D 65206C612074617374-
+    21 00000016 617475726120756E20-
+    21 0000001F 6E756D61723A2000   
+    22 00000027 256400                      format db "%d", 0
+    23 0000002A <res 00000002>              temp resw 1
+    24 0000002C <res 00000001>              masca resb 1
+    25 0000002D 444100                      da db "DA", 0
+    26 00000030 4E5500                      nu db "NU", 0
+    27                                      
+    28                                      
+    29                                  
+    30                                  segment code use32 class=code
+    31                                      start:
+    32                                          ; mesaj pentru a:
+    33                                          
+    34 00000000 68[04000000]                    push dword mesaj_citire
+    35 00000005 FF15[00000000]                  call [printf]
+    36 0000000B 83C404                          add esp, 4 * 1
+    37                                          
+    38                                          ; citire a
+    39                                          
+    40 0000000E 68[00000000]                    push dword octet
+    41 00000013 68[27000000]                    push dword format
+    42 00000018 FF15[00000000]                  call [scanf]
+    43 0000001E 83C408                          add esp, 4 * 2
+    44                                          
+    45                                          
+    46                                         ; mesaj pentru b:
+    47                                          
+    48 00000021 68[04000000]                    push dword mesaj_citire
+    49 00000026 FF15[00000000]                  call [printf]
+    50 0000002C 83C404                          add esp, 4 * 1
+    51                                          
+    52                                          ; citire b
+    53                                          
+    54 0000002F 68[02000000]                    push dword cuvant
+    55 00000034 68[27000000]                    push dword format
+    56 00000039 FF15[00000000]                  call [scanf]
+    57 0000003F 83C408                          add esp, 4 * 2
+    58                                         
+    59                                          
+    60                                          ; repetitiva
+    61                                          
+    62 00000042 B909000000                      mov ecx, 9
+    63                                          verifica_bitii:
+    64 00000047 A0[00000000]                        mov al, [octet]
+    65 0000004C 8A1D[02000000]                      mov bl, [cuvant]
+    66                                              
+    67 00000052 20D8                                and al, bl
+    68                                              
+    69 00000054 3A05[00000000]                      cmp al, [octet]
+    70 0000005A 741D                                je found
+    71                                  
+    72 0000005C 66D12D[02000000]                    shr word[cuvant], 1
+    73                                              
+    74 00000063 49                                  dec ecx
+    75 00000064 83F900                              cmp ecx, 0
+    76 00000067 75DE                                jne verifica_bitii
+    77                                          
+    78                                          ; not found
+    79 00000069 68[30000000]                    push dword nu
+    80 0000006E FF15[00000000]                  call [printf]
+    81 00000074 83C404                          add esp, 4
+    82                                          
+    83 00000077 EB0E                            jmp finish
+    84                                          
+    85                                          found:
+    86 00000079 68[2D000000]                        push dword da
+    87 0000007E FF15[00000000]                      call [printf]
+    88 00000084 83C404                              add esp, 4
+    89                                  
+    90                                          finish:
+    91 00000087 6A00                            push    dword 0      
+    92 00000089 FF15[00000000]                  call    [exit]       
