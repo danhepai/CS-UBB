@@ -75,7 +75,3 @@ class RepoParticipare:
         :return: list
         """
         return self.__participari
-
-
-
-

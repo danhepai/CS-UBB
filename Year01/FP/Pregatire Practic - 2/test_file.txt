@@ -1,0 +1,5 @@
+2;07.02;12:00;FP-PRACTIC;normal
+1;06.02;09:00;FP;normal
+3;07.02;8:00;ANALIZA;restanta
+4;07.02;11:00;ALGEBRA;normal
+7;21.04;18:30;asc;examen

@@ -1,0 +1,9 @@
+1;dan;gaspar;2004
+2;george;cristian;2004
+3;gabi;mircea;1850
+4;zizin;apa;2010
+5;stef;ap;2001
+6;d;e;1950
+7;popandau;gabi mircea;2023
+8;popandau;mircea gabi;2200
+9;popandau;gabi mircea;2024

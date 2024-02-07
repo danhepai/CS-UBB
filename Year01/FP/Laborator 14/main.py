@@ -51,24 +51,32 @@ def solution_recursive(n, string, opened, closed, solutions):
 # isSolution daca isCosistent si daca len(solution) == n
 
 def isCosistent(string, n):
-    closed = opened = 0
+    closed = opened = acolada_closed = acolada_opened = 0
     for char in string:
         if char == '(':
             opened += 1
-        else:
+        elif char == ')':
             closed += 1
-    return n // 2 >= opened >= closed
+        elif char == '}':
+            acolada_closed += 1
+        else:
+            acolada_opened += 1
+    return (n // 2 >= opened >= closed) and (n // 2 >= acolada_opened >= acolada_closed)
 
 
 def isSolution(string, n):
-    closed = opened = 0
+    closed = opened = acolada_closed = acolada_opened = 0
     for char in string:
         if char == '(':
             opened += 1
-        else:
+        elif char == ')':
             closed += 1
+        elif char == '}':
+            acolada_closed += 1
+        else:
+            acolada_opened += 1
 
-    return closed == opened and len(string) == n
+    return closed == opened and acolada_closed == acolada_opened and len(string) == n
 
 
 def BackTracking(string, n, solutions, domain):
@@ -83,15 +91,16 @@ def BackTracking(string, n, solutions, domain):
 
 def main():
     n = get_input()
+    # solutions = []
+    # solution_recursive(n, '', 0, 0, solutions)
+    # print(f"My Recursive: {solutions}")
+    # solutions = []
+    # solution_iterative(n, solutions)
+    # print(f"My Iterative: {solutions}")
     solutions = []
-    solution_recursive(n, '', 0, 0, solutions)
-    print(f"My Recursive: {solutions}")
-    solutions = []
-    solution_iterative(n, solutions)
-    print(f"My Iterative: {solutions}")
-    solutions = []
-    BackTracking('', n, solutions, ['(', ')'])
+    BackTracking('', n, solutions, ['(', '}', '{', ')'])
     print(f"Ge Recursive: {solutions}")
+    print(len(solutions))
 
 
 if __name__ == "__main__":
